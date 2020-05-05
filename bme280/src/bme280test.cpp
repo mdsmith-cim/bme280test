@@ -16,12 +16,13 @@
   See the LICENSE file for details.
  ***************************************************************************/
 
+#include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
-#define SEALEVELPRESSURE_HPA (1013.25)
+#define SEALEVELPRESSURE_HPA (1012.90) 
 
 Adafruit_BME280 bme; // I2C
 
@@ -55,9 +56,10 @@ static uint8_t ucBackBuffer[1024];
 
 OBDISP obd;
 
+void printValues();
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(74880);
     while(!Serial);    // time to get serial running
     Serial.println(F("BME280 test"));
 
@@ -80,7 +82,10 @@ void setup() {
         obdWriteString(&obd, 0,0,0,msgs[rc], FONT_NORMAL, 0, 1);
         obdSetBackBuffer(&obd, ucBackBuffer);
         delay(2000);
-  }
+      }
+      else {
+        Serial.println("OLED Not found!");
+      }
 
   
     obdFill(&obd, 0x0, 1);
@@ -121,5 +126,22 @@ void printValues() {
     dtostrf(humid, 6, 2, result); // Leave room for too large numbers!
     obdWriteString(&obd, 0,5*8,3, result, FONT_NORMAL, 0, 1);
     obdWriteString(&obd, 0,13*8,3, (char *)"%", FONT_NORMAL, 0, 1);
-/
+
+    Serial.print("Temperature = ");
+    Serial.print(temp);
+    Serial.println(" *C");
+
+    Serial.print("Pressure = ");
+
+    Serial.print(pressure);
+    Serial.println(" hPa");
+
+    Serial.print("Approx. Altitude = ");
+    Serial.print(alt);
+    Serial.println(" m");
+
+    Serial.print("Humidity = ");
+    Serial.print(humid);
+    Serial.println(" %");
+
 }
